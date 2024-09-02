@@ -1,47 +1,16 @@
 package tp.integrador;
 
+import tp.integrador.dao.entidadesDao.ClienteDao;
+import tp.integrador.utils.HelperMySQL;
+
 import java.sql.*;
 
-public class ConsultasCliente extends Conexion implements QuerysDAO{
+public class ConsultasCliente{
     private String driver = "com.mysql.cj.jdbc.Driver";
-    private String nombre;
-    private String url;
+    private String url = "jdbc:mysql://localhost:3306/integrador1";
 
-    public ConsultasCliente(String nombre) throws SQLException {
-        this.nombre = nombre;
-        this.url = "jdbc:mysql://localhost:3306/" + nombre;
-    }
-
-    @Override
-    public void crearDB() {
-        try {
-            super.abrirConexion(driver);
-            Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/", "root", "");
-            String db = "CREATE DATABASE " + nombre;
-            PreparedStatement ps = conexion.prepareStatement(db);
-            ps.execute();
-            ps.close();
-            super.cerrarConexion(conexion);
-
-            ConsultasDB cdb = new ConsultasDB(nombre);
-            cdb.crearCliente();
-            cdb.crearFactura();
-            cdb.crearProducto();
-            cdb.crearFactura_Producto();
-            /*
-            cdb.constraintFacturaCliente();
-            cdb.constraintFacturaProducto_Producto();
-            cdb.constraintFacturaProducto_Factura();
-            */
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void retornarRecaudacionMayor() {
         try {
-            super.abrirConexion(driver);
             Connection conexion = DriverManager.getConnection(url, "root", "");
             String select = "SELECT p.nombre, (p.valor * f.cantidad) AS recaudacion " +
                     "FROM Producto p JOIN Factura_Producto f ON p.idProducto = f.idProducto " +
@@ -58,16 +27,14 @@ public class ConsultasCliente extends Conexion implements QuerysDAO{
             } else {
                 System.out.println("No se encontraron productos en la base de datos.");
             }
-            super.cerrarConexion(conexion);
+            conexion.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
     public void listarClientes() {
         try{
-        super.abrirConexion(driver);
         Connection conexion = DriverManager.getConnection(url, "root", "");
         String sql = "SELECT c.nombre, SUM(p.valor) AS total_facturado\n" +
                 "FROM Cliente c\n" +
@@ -90,7 +57,7 @@ public class ConsultasCliente extends Conexion implements QuerysDAO{
 
             System.out.println(nombreCliente + " - Total facturado: " + totalFacturado);
         }
-        super.cerrarConexion(conexion);
+        conexion.close();
     } catch (Exception e) {
         e.printStackTrace();
     }
