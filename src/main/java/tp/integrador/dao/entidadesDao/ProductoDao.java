@@ -1,6 +1,9 @@
 package tp.integrador.dao.entidadesDao;
 
 import tp.integrador.dao.Dao;
+import tp.integrador.dto.ClienteDto;
+import tp.integrador.dto.ProductoDto;
+import tp.integrador.entidades.Cliente;
 import tp.integrador.entidades.Factura_Producto;
 import tp.integrador.entidades.Producto;
 
@@ -8,6 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductoDao implements Dao<Producto> {
     private Connection conn;
@@ -94,5 +99,79 @@ public class ProductoDao implements Dao<Producto> {
         }
 
         return productoById;
+    }
+
+
+    public ProductoDto findClienteDTO(long id) {
+        String query = "SELECT p.nombre, (p.valor * f.cantidad) AS recaudacion " +
+                "FROM Producto p JOIN Factura_Producto f ON p.idProducto = f.idProducto " +
+                "WHERE idProducto = ?";
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        ProductoDto productoDto = null;
+        try {
+            ps = conn.prepareStatement(query);
+            ps.setLong(1, id); // Establecer el parámetro en la consulta SQL
+            rs = ps.executeQuery();
+            if (rs.next()) { // Verificar si hay resultados
+                String nombre = rs.getString("nombre");
+                float recaudacion = rs.getFloat("recaudacion");
+
+                // Crear una nueva instancia de PersonaDTO con los datos recuperados de la consulta
+                productoDto = new ProductoDto(nombre, recaudacion);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                conn.commit();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return productoDto;
+    }
+
+
+    public ProductoDto productoQueMasRecaudo() {
+        String query = "SELECT p.nombre, (p.valor * f.cantidad) AS recaudacion " +
+                "FROM Producto p JOIN Factura_Producto f ON p.idProducto = f.idProducto " +
+                "ORDER BY recaudacion DESC " +
+                "LIMIT 1";
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ProductoDto productoDto = null;
+        try {
+            ps = conn.prepareStatement(query);
+            rs = ps.executeQuery();
+            if (rs.next()) { // Verificar si hay resultados
+                String nombre = rs.getString("nombre");
+                float recaudacion = rs.getFloat("recaudacion");
+
+                // Crear una nueva instancia de PersonaDTO con los datos recuperados de la consulta
+                productoDto = new ProductoDto(nombre, recaudacion);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                conn.commit();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return productoDto;
     }
 }

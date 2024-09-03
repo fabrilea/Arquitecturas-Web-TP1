@@ -1,12 +1,16 @@
 package tp.integrador.dao.entidadesDao;
 
 import tp.integrador.dao.Dao;
+import tp.integrador.dto.ClienteDto;
+import tp.integrador.dto.ProductoDto;
 import tp.integrador.entidades.Cliente;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClienteDao implements Dao<Cliente> {
 
@@ -94,4 +98,85 @@ public class ClienteDao implements Dao<Cliente> {
         return clienteById;
     }
 
+
+    public ClienteDto findClienteDTO(long id) {
+        String query = "SELECT c.nombre, c.email, SUM(p.valor) AS total_facturado\n" +
+                "FROM Cliente c\n" +
+                "JOIN Factura f ON f.idCliente = c.idCliente\n" +
+                "JOIN Factura_Producto fp ON f.idFactura = fp.idFactura\n JOIN Producto p ON fp.idProducto = p.idProducto " +
+                "WHERE idCliente = ?";
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        ClienteDto clienteDto = null;
+        try {
+            ps = conn.prepareStatement(query);
+            ps.setLong(1, id); // Establecer el parámetro en la consulta SQL
+            rs = ps.executeQuery();
+            if (rs.next()) { // Verificar si hay resultados
+                String nombre = rs.getString("nombre");
+                String email = rs.getString("email");
+                float total_facturado = rs.getFloat("total_facturado");
+
+                // Crear una nueva instancia de PersonaDTO con los datos recuperados de la consulta
+                clienteDto = new ClienteDto(nombre, email, total_facturado);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                conn.commit();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return clienteDto;
+    }
+
+
+    public List<ClienteDto> listarClientes() {
+        String query = "SELECT c.nombre, c.email, SUM(p.valor) AS total_facturado\n" +
+                "FROM Cliente c\n" +
+                "JOIN Factura f ON f.idCliente = c.idCliente\n" +
+                "JOIN Factura_Producto fp ON f.idFactura = fp.idFactura\n JOIN Producto p ON fp.idProducto = p.idProducto " +
+                "GROUP BY c.idCliente, c.nombre\n" +
+                "ORDER BY total_facturado DESC " +
+                "";
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<ClienteDto> listado = null;
+        try {
+            ps = conn.prepareStatement(query);
+            rs = ps.executeQuery();
+            // Crear una nueva instancia de Persona con los datos recuperados de la consulta
+            listado = new ArrayList<ClienteDto>();
+            while (rs.next()) { // Verificar si hay resultados
+                String nombre = rs.getString("nombre");
+                String email = rs.getString("email");
+                float total_facturado  = rs.getFloat("total_facturado");
+                ClienteDto clienteDto = new ClienteDto(nombre, email, total_facturado);
+                listado.add(clienteDto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                conn.commit();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return listado;
+    }
 }

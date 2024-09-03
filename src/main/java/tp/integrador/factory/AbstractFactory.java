@@ -11,8 +11,8 @@ public abstract class AbstractFactory {
     public static final int DERBY_JDBC = 2;
     public abstract ClienteDao getClienteDao();
     public abstract FacturaDao getFacturaDao();
-    public abstract ProductoDao getProducto();
-    public abstract Factura_ProductoDao getFacturaProducto();
+    public abstract ProductoDao getProductoDao();
+    public abstract Factura_ProductoDao getFacturaProductoDao();
     public static AbstractFactory getDAOFactory(int whichFactory) {
         switch (whichFactory) {
             case MYSQL_JDBC : {
