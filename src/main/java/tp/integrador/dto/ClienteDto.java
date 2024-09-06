@@ -40,6 +40,6 @@ public class ClienteDto {
 
     @Override
     public String toString() {
-        return "ClienteDto{" + "nombre=" + nombre + ", email=" + email + ", total_facturado=" + total_facturado + '}';
+        return "Cliente{" + "nombre=" + nombre + ", email=" + email + ", total_facturado=" + total_facturado + '}';
     }
 }

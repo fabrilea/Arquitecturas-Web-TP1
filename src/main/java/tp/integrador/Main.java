@@ -40,14 +40,13 @@ public class Main {
         System.out.println();
         System.out.println("Lista de Clientes: ");
         List<ClienteDto> listadoClientes = cliente.listarClientes();
-        System.out.println(listadoClientes);
         for (ClienteDto clienteDto : listadoClientes) {
             System.out.println(clienteDto);
         }
         System.out.println("////////////////////////////////////////////");
         System.out.println("////////////////////////////////////////////");
         System.out.println();
-        System.out.println("Producto que más recuadó: ");
+        System.out.println("Producto que más recaudó: ");
         ProductoDto productoQueMasRecaudo = producto.productoQueMasRecaudo();
         System.out.println(productoQueMasRecaudo);
 

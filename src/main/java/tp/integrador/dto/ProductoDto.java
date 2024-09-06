@@ -30,6 +30,6 @@ public class ProductoDto {
 
     @Override
     public String toString() {
-        return "ProductoDto{" + "nombre=" + nombre + ", recaudacion=" + recaudacion + '}';
+        return "Producto{" + "nombre=" + nombre + ", recaudacion=" + recaudacion + '}';
     }
 }

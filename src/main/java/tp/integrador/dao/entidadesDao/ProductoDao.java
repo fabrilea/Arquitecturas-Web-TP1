@@ -102,7 +102,7 @@ public class ProductoDao implements Dao<Producto> {
     }
 
 
-    public ProductoDto findClienteDTO(long id) {
+    public ProductoDto findProductoDTO(long id) {
         String query = "SELECT p.nombre, (p.valor * f.cantidad) AS recaudacion " +
                 "FROM Producto p JOIN Factura_Producto f ON p.idProducto = f.idProducto " +
                 "WHERE idProducto = ?";
