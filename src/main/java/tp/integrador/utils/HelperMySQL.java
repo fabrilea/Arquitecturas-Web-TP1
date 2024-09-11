@@ -81,7 +81,7 @@ public class HelperMySQL {
                 "    idFactura int  NOT NULL,\n" +
                 "    idProducto int  NOT NULL,\n" +
                 "    cantidad int  NOT NULL\n" +
-                ");\n";
+                ");";
         this.conn.prepareStatement(tableFactura_Producto).execute();
 
         String tableProducto = "CREATE TABLE IF NOT EXISTS Producto (\n" +
